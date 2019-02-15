@@ -20,8 +20,9 @@ namespace Assets.Scripts
         [UsedImplicitly]
         private void Update()
         {
-            IsAccelerateButtonPressed = Input.GetButton(ButtonName.Accelerate);
-            IsBrakesButtonPressed = Input.GetButton(ButtonName.Brakes);
+            IsAccelerateButtonPressed = Input.GetButton(InputName.Accelerate);
+            IsBrakesButtonPressed = Input.GetButton(InputName.Brakes);
+            HorizontalAxis = Input.GetAxis(InputName.Horizontal);
         }
 
         /// <summary>
@@ -30,21 +31,29 @@ namespace Assets.Scripts
         [UsedImplicitly]
         private void FixedUpdate()
         {
+            var rigidBody = GetComponent<Rigidbody2D>();
             if (IsAccelerateButtonPressed)
             {
-                GetComponent<Rigidbody2D>().AddForce(transform.up * SpeedForce);
-                Debug.Log($"{ButtonName.Accelerate} Button pressed");
+                rigidBody.AddForce(transform.up * SpeedForce);
+                Debug.Log($"{InputName.Accelerate} Button pressed");
             }
             if (IsBrakesButtonPressed)
             {
-                Debug.Log($"{ButtonName.Brakes} Button pressed");
+                Debug.Log($"{InputName.Brakes} Button pressed");
             }
+
+            rigidBody.AddTorque(HorizontalAxis * TorqueForce);
         }
 
         private bool IsAccelerateButtonPressed { get; set; }
 
         private bool IsBrakesButtonPressed { get; set; }
 
+        private float HorizontalAxis { get; set; }
+   
+         
         private float SpeedForce { get; } = 10;
+
+        private float TorqueForce { get; } = -2;
     }
 }
