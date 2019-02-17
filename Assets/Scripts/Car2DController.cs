@@ -11,7 +11,7 @@ namespace Assets.Scripts
         [UsedImplicitly]
         private void Start()
         {
-        
+            _rigidBody = GetComponent<Rigidbody2D>();
         }
 
         /// <summary>
@@ -31,20 +31,28 @@ namespace Assets.Scripts
         [UsedImplicitly]
         private void FixedUpdate()
         {
-            var rigidBody = GetComponent<Rigidbody2D>();
+            HandleInput();
+            AdjustVelocity();
+        }
+
+        private void AdjustVelocity()
+        {
+            _rigidBody.angularVelocity = HorizontalAxis * TorqueForce;
+
+            _rigidBody.velocity = ForwardVelocity() + RightVelocity() * SlippyDriftFactor;
+        }
+
+        private void HandleInput()
+        {
             if (IsAccelerateButtonPressed)
             {
-                rigidBody.AddForce(transform.up * SpeedForce);
+                _rigidBody.AddForce(transform.up * SpeedForce);
                 Debug.Log($"{InputName.Accelerate} Button pressed");
             }
             if (IsBrakesButtonPressed)
             {
                 Debug.Log($"{InputName.Brakes} Button pressed");
             }
-
-            rigidBody.angularVelocity = HorizontalAxis * TorqueForce;
-
-            rigidBody.velocity = ForwardVelocity() + RightVelocity() * DriftFactor;
         }
 
         private Vector2 ForwardVelocity()
@@ -59,8 +67,7 @@ namespace Assets.Scripts
 
         private Vector2 CalculateVelocity(Vector2 direction)
         {
-            var rigidBody = GetComponent<Rigidbody2D>();
-            return direction * Vector2.Dot(rigidBody.velocity, direction);
+            return direction * Vector2.Dot(_rigidBody.velocity, direction);
         }
 
         private bool IsAccelerateButtonPressed { get; set; }
@@ -74,6 +81,12 @@ namespace Assets.Scripts
 
         private const float TorqueForce = -200;
 
-        private const float DriftFactor = 0.999f;
+        private const float StickyDriftFactor = 0.1f;
+
+        private const float SlippyDriftFactor = 0.999f;
+
+        private const float MaxStickyVelocity = 2.5f;
+
+        private Rigidbody2D _rigidBody;
     }
 }
