@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -39,7 +40,33 @@ namespace Assets.Scripts
         {
             _rigidBody.angularVelocity = HorizontalAxis * TorqueForce;
 
-            _rigidBody.velocity = ForwardVelocity() + RightVelocity() * SlippyDriftFactor;
+            var driftFactor = GetDriftFactor();
+
+            _rigidBody.velocity = ForwardVelocity() + RightVelocity() * driftFactor;
+        }
+
+        private float GetDriftFactor()
+        {
+            var sidewaysVelocity = RightVelocity().magnitude;
+            switch (_driftState)
+            {
+                case DriftState.Sticky:
+                    var driftShouldGoSlippy = sidewaysVelocity > MaxStickyVelocity;
+                    if (driftShouldGoSlippy)
+                    {
+                        _driftState = DriftState.Slippy;
+                    }
+                    return driftShouldGoSlippy ? SlippyDriftFactor : StickyDriftFactor;
+                case DriftState.Slippy:
+                    var driftShouldGoSticky = sidewaysVelocity < MinSlippyVelocity;
+                    if (driftShouldGoSticky)
+                    {
+                        _driftState = DriftState.Sticky;
+                    }
+                    return driftShouldGoSticky ? StickyDriftFactor : SlippyDriftFactor;
+                default:
+                    throw new ArgumentOutOfRangeException(_driftState.ToString());
+            }
         }
 
         private void HandleInput()
@@ -77,16 +104,26 @@ namespace Assets.Scripts
         private float HorizontalAxis { get; set; }
    
          
-        private const float SpeedForce = 10;
+        private Rigidbody2D _rigidBody;
 
-        private const float TorqueForce = -200;
+        private const float SpeedForce = 10f;
 
-        private const float StickyDriftFactor = 0.1f;
+        private const float TorqueForce = -200f;
 
-        private const float SlippyDriftFactor = 0.999f;
+        private const float StickyDriftFactor = 0.9f;
+
+        private const float SlippyDriftFactor = 1f;
 
         private const float MaxStickyVelocity = 2.5f;
 
-        private Rigidbody2D _rigidBody;
+        private const float MinSlippyVelocity = 1.5f;
+
+        private DriftState _driftState = DriftState.Sticky;
+
+        private enum DriftState
+        {
+            Sticky,
+            Slippy
+        }
     }
 }
