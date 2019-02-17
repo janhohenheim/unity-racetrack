@@ -121,7 +121,7 @@ namespace Assets.Scripts
 
         private const float MinSlippyVelocity = 1.5f;
 
-        private const float SpeedLimitForMaxTorqueApplication = 5f;
+        private const float SpeedLimitForMaxTorqueApplication = 2f;
 
         private DriftState _driftState = DriftState.Sticky;
 
