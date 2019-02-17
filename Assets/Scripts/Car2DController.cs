@@ -43,6 +43,24 @@ namespace Assets.Scripts
             }
 
             rigidBody.AddTorque(HorizontalAxis * TorqueForce);
+
+            rigidBody.velocity = ForwardVelocity();
+        }
+
+        private Vector2 ForwardVelocity()
+        {
+            return CalculateVelocity(transform.up);
+        }
+
+        private Vector2 RightVelocity()
+        {
+            return CalculateVelocity(transform.right);
+        }
+
+        private Vector2 CalculateVelocity(Vector2 direction)
+        {
+            var rigidBody = GetComponent<Rigidbody2D>();
+            return direction * Vector2.Dot(rigidBody.velocity, direction);
         }
 
         private bool IsAccelerateButtonPressed { get; set; }
