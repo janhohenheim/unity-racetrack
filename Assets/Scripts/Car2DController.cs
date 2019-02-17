@@ -110,7 +110,7 @@ namespace Assets.Scripts
 
         private Rigidbody2D _rigidBody;
 
-        private const float SpeedForce = 10f;
+        private const float SpeedForce = 15f;
 
         private const float TorqueForce = -200f;
 
