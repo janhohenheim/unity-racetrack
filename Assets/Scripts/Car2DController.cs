@@ -42,9 +42,9 @@ namespace Assets.Scripts
                 Debug.Log($"{InputName.Brakes} Button pressed");
             }
 
-            rigidBody.AddTorque(HorizontalAxis * TorqueForce);
+            rigidBody.angularVelocity = HorizontalAxis * TorqueForce;
 
-            rigidBody.velocity = ForwardVelocity();
+            rigidBody.velocity = ForwardVelocity() + RightVelocity() * DriftFactor;
         }
 
         private Vector2 ForwardVelocity()
@@ -70,8 +70,10 @@ namespace Assets.Scripts
         private float HorizontalAxis { get; set; }
    
          
-        private float SpeedForce { get; } = 10;
+        private const float SpeedForce = 10;
 
-        private float TorqueForce { get; } = -2;
+        private const float TorqueForce = -200;
+
+        private const float DriftFactor = 0.999f;
     }
 }
