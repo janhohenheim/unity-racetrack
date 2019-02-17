@@ -81,6 +81,7 @@ namespace Assets.Scripts
             }
             if (IsBrakesButtonPressed)
             {
+                _rigidBody.AddForce(transform.up * -SpeedForce / 2f);
                 Debug.Log($"{InputName.Brakes} Button pressed");
             }
         }
