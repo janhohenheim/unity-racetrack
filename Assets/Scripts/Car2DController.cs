@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Assets.Scripts
 {
     public class Car2DController : MonoBehaviour
-    {   
+    {
         /// <summary>
         /// Start is called before the first frame update
         /// </summary>
@@ -38,11 +38,14 @@ namespace Assets.Scripts
 
         private void AdjustVelocity()
         {
-            _rigidBody.angularVelocity = HorizontalAxis * TorqueForce;
+            var torqueForceLerpStep = _rigidBody.velocity.magnitude / SpeedLimitForMaxTorqueApplication;
+            var torqueForce = Mathf.Lerp(0, TorqueForce, torqueForceLerpStep);
+            _rigidBody.angularVelocity = HorizontalAxis * torqueForce;
 
             var driftFactor = GetDriftFactor();
 
             _rigidBody.velocity = ForwardVelocity() + RightVelocity() * driftFactor;
+
         }
 
         private float GetDriftFactor()
@@ -102,8 +105,8 @@ namespace Assets.Scripts
         private bool IsBrakesButtonPressed { get; set; }
 
         private float HorizontalAxis { get; set; }
-   
-         
+
+
         private Rigidbody2D _rigidBody;
 
         private const float SpeedForce = 10f;
@@ -117,6 +120,8 @@ namespace Assets.Scripts
         private const float MaxStickyVelocity = 2.5f;
 
         private const float MinSlippyVelocity = 1.5f;
+
+        private const float SpeedLimitForMaxTorqueApplication = 5f;
 
         private DriftState _driftState = DriftState.Sticky;
 
